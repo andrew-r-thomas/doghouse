@@ -1,59 +1,40 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
-#include <stdlib.h>
 #include <stdio.h>
 
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
-    ma_encoder* pEncoder = (ma_encoder*)pDevice->pUserData;
-    MA_ASSERT(pEncoder != NULL);
-
-    ma_encoder_write_pcm_frames(pEncoder, pInput, frameCount, NULL);
-
-    (void)pOutput;
+   float* buff = (float*)pInput;
+   for (int i = 0; i < frameCount; i++) {
+    float check = buff[i];
+    printf("need a place to stop");
+   }
 }
 
-int main()
+int main(int argc, char** argv)
 {
     ma_result result;
-    ma_encoder_config encoderConfig;
-    ma_encoder encoder;
     ma_device_config deviceConfig;
     ma_device device;
 
-    encoderConfig = ma_encoder_config_init(ma_encoding_format_wav, ma_format_f32, 2, 44100);
-
-    if (ma_encoder_init_file("test.wav", &encoderConfig, &encoder) != MA_SUCCESS) {
-        printf("Failed to initialize output file.\n");
-        return -1;
-    }
-
     deviceConfig = ma_device_config_init(ma_device_type_capture);
-    deviceConfig.capture.format   = encoder.config.format;
-    deviceConfig.capture.channels = encoder.config.channels;
-    deviceConfig.sampleRate       = encoder.config.sampleRate;
-    deviceConfig.dataCallback     = data_callback;
-    deviceConfig.pUserData        = &encoder;
-
+    deviceConfig.capture.format     = ma_format_s16;
+    deviceConfig.capture.channels   = 2;
+    deviceConfig.dataCallback       = data_callback;
     result = ma_device_init(NULL, &deviceConfig, &device);
     if (result != MA_SUCCESS) {
-        printf("Failed to initialize capture device.\n");
-        return -2;
+        return result;
     }
 
-    result = ma_device_start(&device);
-    if (result != MA_SUCCESS) {
-        ma_device_uninit(&device);
-        printf("Failed to start device.\n");
-        return -3;
-    }
+    ma_device_start(&device);
 
-    printf("Press Enter to stop recording...\n");
+    printf("Press Enter to quit...\n");
     getchar();
-    
-    ma_device_uninit(&device);
-    ma_encoder_uninit(&encoder);
 
+    ma_device_uninit(&device);
+
+    (void)argc;
+    (void)argv;
     return 0;
 }
