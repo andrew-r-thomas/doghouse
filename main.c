@@ -2,13 +2,14 @@
 #include "miniaudio.h"
 
 #include <stdio.h>
+float max = 0;
 
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
    float* buff = (float*)pInput;
-   for (int i = 0; i < frameCount; i++) {
+   for (unsigned long i = 0; i < frameCount * 2; i += 2) {
     float check = buff[i];
-    printf("need a place to stop");
+    printf("%f\n", check);
    }
 }
 
