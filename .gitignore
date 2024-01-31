@@ -1,5 +1,6 @@
 main.dSYM/
 test.wav
-doghouse
 main
 .vscode
+zig-out/
+zig-cache/
