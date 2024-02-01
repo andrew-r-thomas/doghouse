@@ -67,12 +67,24 @@ fn process(
 
     buffer[(1024 - shift)..].copy_from_slice(input);
 
+    // TODO move this out of the process function so that we only allocate once (and not in the function)
+    // TODO also rename this to something like scratch or buffer to know that it is basically a place to
+    // store temorary shit
     let mut padded: [f32; 2048] = [0.0; 2048];
     padded[0..1024].copy_from_slice(buffer);
 
     let _ = forward.process(&mut padded, spectrum);
-    spectrum.
 
-    println!("input: {:?}\n", input);
-    println!("buffer: {:?}\n", buffer);
+    // find power spectrum
+    for i in 0..spectrum.len() {
+        let s = spectrum[i];
+        spectrum[i] = Complex {
+            re: f32::powi(f32::abs(f32::sqrt((s.re * s.re) + (s.im * s.im))), 2),
+            im: 0.0,
+        }
+    }
+
+    let _ = inverse.process(spectrum, output);
+
+    println!("output: {:?}\n", output);
 }
