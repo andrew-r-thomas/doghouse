@@ -1,0 +1,2 @@
+add_executable(doghouse main.cpp)
+target_link_libraries(doghouse PRIVATE /usr/local/lib/libportaudio.dylib)

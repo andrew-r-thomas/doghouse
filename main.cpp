@@ -33,8 +33,8 @@ static int patestCallback(
     float vol_r = 0;
 
     for (unsigned long i = 0; i < framesPerBuffer * 2; i += 2) {
-        vol_l = max(vol_l, std::abs(in[i]));
-        vol_r = max(vol_r, std::abs(in[i+1]));
+        vol_l = max(vol_l, abs(in[i]));
+        vol_r = max(vol_r, abs(in[i+1]));
     }
 
     for (int i = 0; i < dispSize; i++) {
