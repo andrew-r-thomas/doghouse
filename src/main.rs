@@ -27,6 +27,8 @@ fn main() -> Result<(), anyhow::Error> {
         .expect("Failed to get default input config");
     println!("Default input config: {:?}", config);
 
+    let sec_per_sample = 1 as f32 / config.sample_rate().0 as f32;
+
     let err_fn = move |err| {
         eprintln!("an error occurred on stream: {}", err);
     };
@@ -41,6 +43,7 @@ fn main() -> Result<(), anyhow::Error> {
                 &fft_inverse,
                 &mut spectrum,
                 &mut output,
+                sec_per_sample,
             )
         },
         err_fn,
@@ -59,6 +62,7 @@ fn process(
     inverse: &Arc<dyn ComplexToReal<f32>>,
     spectrum: &mut Vec<Complex<f32>>,
     output: &mut Vec<f32>,
+    sec_per_sample: f32,
 ) {
     let shift = input.len();
     assert!(shift <= 1024);
@@ -76,6 +80,7 @@ fn process(
     let _ = forward.process(&mut padded, spectrum);
 
     // find power spectrum
+    // TODO SIMD the shit outta this
     for i in 0..spectrum.len() {
         let s = spectrum[i];
         spectrum[i] = Complex {
@@ -86,5 +91,20 @@ fn process(
 
     let _ = inverse.process(spectrum, output);
 
-    println!("output: {:?}\n", output);
+    // TODO now we need to efficiently find the gap between the peaks, and convert this to hertz
+    // TODO potentially convert this to yin since this might be simpler
+    let mut max_idx = 0;
+    for i in 1024..2048 {
+        if output[i - 1] < output[i] && output[i + 1] < output[i] {
+            max_idx = i;
+            break;
+        }
+    }
+
+    // find distance between middle and peak
+    let diff = max_idx - 1024;
+    let sec = sec_per_sample * diff as f32;
+    let htz = 1.0 / sec;
+
+    println!("htz: {:?}\n", htz);
 }
