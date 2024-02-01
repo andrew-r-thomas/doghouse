@@ -1,8 +1,1 @@
-main.dSYM/
-test.wav
-main
-.vscode
-zig-out/
-zig-cache/
-portaudio/
-build/
+/target
