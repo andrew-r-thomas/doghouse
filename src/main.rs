@@ -73,5 +73,6 @@ fn print_data(input: &[f32], buffer: &mut [f32; 1024]) {
 
     buffer[1024 - shift..].copy_from_slice(input);
 
-    println!("{:?}\n", buffer);
+    println!("input: {:?}\n", input);
+    println!("buffer: {:?}\n", buffer);
 }
