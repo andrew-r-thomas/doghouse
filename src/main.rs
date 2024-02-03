@@ -1,6 +1,12 @@
 #![feature(portable_simd)]
 pub mod yin;
-use std::{array, intrinsics::sinf32, sync::Arc};
+use std::{
+    array,
+    intrinsics::sinf32,
+    iter,
+    simd::{f32x4, Simd},
+    sync::Arc,
+};
 
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use realfft::{num_complex::Complex, ComplexToReal, RealFftPlanner, RealToComplex};
@@ -118,8 +124,29 @@ fn process(
 // TODO this is very hard coded for now,
 // I really don't know a good way yet to make this a nice to use library,
 // I really would love something like comptime
-const size: usize = 1024;
-const tau_min: usize = 20;
-const tau_max: usize = 512;
+const SIZE: usize = 1024;
+const WINDOW_SIZE: usize = 512;
+const SHIFT_MIN: usize = 20;
+const SHIFT_MAX: usize = 512;
 // TODO watch video again to see math definition of diff fn
-fn yin(signal: &[f32]) {}
+// start with arrays, then move to SIMD
+fn yin(signal: &[f32]) {
+    let CMNDF_vals: [f32; SHIFT_MAX - SHIFT_MIN] = [0.0; SHIFT_MAX - SHIFT_MIN];
+    for i in SHIFT_MIN..SHIFT_MAX {
+        // TODO
+        let mut DF: f32 = 0.0;
+        let sum: f32 = 0.0;
+        for j in 0..=i {
+            if j == i {
+                DF = 0.0; // TODO
+                break;
+            }
+        }
+    }
+}
+
+fn DF(signal: &[f32], shift: usize) -> f32 {
+    for i in 0..WINDOW_SIZE {
+        sinal[i] * 
+    }
+}
