@@ -1,12 +1,18 @@
+#![feature(portable_simd)]
+pub mod yin;
 use std::sync::Arc;
 
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use realfft::{num_complex::Complex, ComplexToReal, RealFftPlanner, RealToComplex};
 
+// something to note, this is going to be tested as a guitar tuner,
+// so the range of frequencies that we can detect are specific to that
+// that is something to see in the tau min and max
 fn main() -> Result<(), anyhow::Error> {
     let host = cpal::default_host();
 
     // set up stuff for computing autocorrelation
+    // TODO consider storing buffer as a SIMD vector
     let mut buffer: [f32; 1024] = [0.0; 1024];
     let mut planner = RealFftPlanner::<f32>::new();
     let fft_forward: Arc<dyn RealToComplex<f32>> = planner.plan_fft_forward(2048);
@@ -108,3 +114,11 @@ fn process(
 
     println!("htz: {:?}\n", htz);
 }
+
+// TODO this is very hard coded for now,
+// I really don't know a good way yet to make this a nice to use library,
+// I really would love something like comptime
+const size: usize = 1024;
+const tau_min: usize = 20;
+const tau_max: usize = 512;
+fn yin() {}
