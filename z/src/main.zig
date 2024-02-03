@@ -46,6 +46,8 @@ fn detect_pitch(signal: [size]f32, sample_rate: usize) usize {
     var min: f32 = undefined;
     var arg_min: usize = undefined;
 
+    // I don't think this for loop is going away,
+    // but we might be able to get rid of the rest
     for (0..window_size) |lag| {
         const cmndf_val = cmndf(lag, diffs);
         if (cmndf_val < thresh) {
