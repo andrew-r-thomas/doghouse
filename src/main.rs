@@ -1,6 +1,6 @@
 #![feature(portable_simd)]
 pub mod yin;
-use std::sync::Arc;
+use std::{array, intrinsics::sinf32, sync::Arc};
 
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use realfft::{num_complex::Complex, ComplexToReal, RealFftPlanner, RealToComplex};
@@ -121,4 +121,5 @@ fn process(
 const size: usize = 1024;
 const tau_min: usize = 20;
 const tau_max: usize = 512;
-fn yin() {}
+// TODO watch video again to see math definition of diff fn
+fn yin(signal: &[f32]) {}
