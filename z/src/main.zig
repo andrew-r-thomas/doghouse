@@ -5,7 +5,7 @@ pub fn main() !void {
     std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
 
     const check: [size]f32 = [_]f32{0.0} ** size;
-    const pitch = detect_pitch(check);
+    const pitch = detect_pitch(check, 44100);
     _ = pitch;
 
     // stdout is for the actual output of your application, for example if you
@@ -28,10 +28,13 @@ test "simple test" {
 }
 
 // TODO think about padding
+// TODO we might need a min
 const size: usize = 1024;
 const window_size: usize = size / 2;
+const thresh = 0.1;
 
-fn detect_pitch(signal: [size]f32) f32 {
+fn detect_pitch(signal: [size]f32, sample_rate: usize) usize {
+
     // // TODO see if we can SIMD
     // // TODO only use one array if possible
     var diffs: [window_size]f32 = undefined;
@@ -39,12 +42,26 @@ fn detect_pitch(signal: [size]f32) f32 {
         diffs[lag] = diff_fn(lag, signal);
     }
 
-    var cmndfs: [window_size]f32 = undefined;
+    var sample: usize = undefined;
+    var min: f32 = undefined;
+    var arg_min: usize = undefined;
+
     for (0..window_size) |lag| {
-        cmndfs[lag] = cmndf(lag, diffs);
+        const cmndf_val = cmndf(lag, diffs);
+        if (cmndf_val < thresh) {
+            sample = lag;
+            break;
+        } else {
+            if (cmndf_val < min) {
+                min = cmndf_val;
+                arg_min = lag;
+            }
+        }
     }
 
-    return 0.0;
+    if (sample == undefined) sample = arg_min;
+
+    return sample_rate / sample;
 }
 
 fn diff_fn(lag: usize, signal: [size]f32) f32 {
@@ -57,10 +74,14 @@ fn diff_fn(lag: usize, signal: [size]f32) f32 {
     return @reduce(.Add, diff * diff);
 }
 
-fn cmndf(comptime lag: usize, diffs: [window_size]f32) f32 {
+fn cmndf(lag: usize, diffs: [window_size]f32) f32 {
     if (lag == 0) return 1;
 
-    const vec: @Vector(lag, f32) = diffs[0..lag].*;
-    const sum = @reduce(.Add, vec);
-    return diffs[lag] / (sum / lag);
+    // TODO we can SIMD this somehow, I just know it
+    var sum: f32 = 0;
+    for (0..lag) |i| {
+        sum += diffs[i];
+    }
+
+    return diffs[lag] / (sum / @as(f32, @floatFromInt(lag)));
 }
