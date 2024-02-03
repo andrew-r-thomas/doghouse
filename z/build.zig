@@ -1,4 +1,5 @@
 const std = @import("std");
+const mach_sysaudio = @import("mach_sysaudio");
 
 // Although this function looks imperative, note that its job is to
 // declaratively construct a build graph that will be executed by an external
@@ -35,6 +36,12 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+
+    const mach_sysaudio_dep = b.dependency("mach_sysaudio", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    exe.root_module.addImport("mach-sysaudio", mach_sysaudio_dep.module("mach-sysaudio"));
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default

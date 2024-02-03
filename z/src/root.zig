@@ -15,7 +15,7 @@ const size: usize = 1024;
 const window_size: usize = size / 2;
 const thresh = 0.1;
 
-fn detect_pitch(signal: [size]f32, sample_rate: usize) usize {
+pub fn detect_pitch(signal: [size]f32, sample_rate: usize) usize {
 
     // // TODO see if we can SIMD
     // // TODO only use one array if possible

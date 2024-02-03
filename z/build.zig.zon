@@ -38,6 +38,10 @@
         //    // computed. This field and `url` are mutually exclusive.
         //    .path = "foo",
         //},
+        .mach_sysaudio = .{
+            .url = "https://pkg.machengine.org/mach-sysaudio/ce8ab30dd300b822224d14997c58c06520b642c9.tar.gz",
+            .hash = "12203f0d4afc83bae8571434ff48a459732c15c9542df13e0a97baedc73212d355a1",
+        },
     },
 
     // Specifies the set of files and directories that are included in this package.
