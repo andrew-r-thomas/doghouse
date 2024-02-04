@@ -16,7 +16,7 @@ pub fn build(b: *std.Build) void {
 
     const exe = b.addExecutable(.{
         .name = "example",
-        .root_source_file = .{ .path = "src/examples/example.zig" },
+        .root_source_file = .{ .path = "examples/example.zig" },
         .target = target,
         .optimize = optimize,
     });
