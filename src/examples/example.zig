@@ -1,11 +1,6 @@
-// //! Redirects input device into zig-out/raw_audio file.
-
 const std = @import("std");
 const sysaudio = @import("mach-sysaudio");
-const detect = @import("./root.zig");
-
-var recorder: sysaudio.Recorder = undefined;
-var file: std.fs.File = undefined;
+const doghouse = @import("doghouse");
 
 // Note: this Info.plist file gets embedded into the final binary __TEXT,__info_plist
 // linker section. On macOS this means that NSMicrophoneUsageDescription is set. Without
@@ -38,6 +33,8 @@ export var __info_plist: [663:0]u8 linksection("__TEXT,__info_plist") =
     \\ </plist>
 ).*;
 
+var recorder: sysaudio.Recorder = undefined;
+
 pub fn main() !void {
     _ = __info_plist;
 
@@ -52,38 +49,13 @@ pub fn main() !void {
 
     recorder = try ctx.createRecorder(device, readCallback, .{});
     defer recorder.deinit();
+
     try recorder.start();
-
-    const zig_out = try std.fs.cwd().makeOpenPath("zig-out", .{});
-    file = try zig_out.createFile("raw_audio", .{});
-
-    std.debug.print(
-        \\Recording to zig-out/raw_audio using:
-        \\
-        \\  device: {s}
-        \\  channels: {}
-        \\  sample_rate: {}
-        \\
-        \\You can play this recording back using e.g.:
-        \\  $ ffplay -f f32le -ar {} -ac {} zig-out/raw_audio
-        \\
-    , .{
-        device.name,
-        device.channels.len,
-        recorder.sampleRate(),
-        recorder.sampleRate(),
-        device.channels.len,
-    });
-    // Note: you may also use e.g.:
-    //
-    // ```
-    // paplay -p --format=FLOAT32LE --rate 48000 --raw zig-out/raw_audio
-    // aplay -f FLOAT_LE -r 48000 zig-out/raw_audio
-    // ```
 
     while (true) {}
 }
 
+const yin = doghouse.Yin(1024);
 var buff: [1024]f32 = [_]f32{0.0} ** 1024;
 fn readCallback(_: ?*anyopaque, input: []const u8) void {
     const format_size = recorder.format().size();
@@ -91,6 +63,9 @@ fn readCallback(_: ?*anyopaque, input: []const u8) void {
     std.mem.rotate(f32, &buff, samples);
 
     sysaudio.convertFrom(f32, buff[samples..], recorder.format(), input);
-    const htz = detect.detect_pitch(buff, recorder.sampleRate());
+    const htz = yin.detect_pitch(buff, recorder.sampleRate());
+    // TODO put in a separate thread
     std.debug.print("{d} hertz\n", .{htz});
 }
+
+// TODO add some simple tests

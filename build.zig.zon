@@ -1,0 +1,19 @@
+.{
+    .name = "doghouse",
+    .version = "0.1.0",
+    .minimum_zig_version = "0.12.0-dev.2063+804cee3b9",
+
+    .dependencies = .{
+        .mach_sysaudio = .{
+            .url = "https://pkg.machengine.org/mach-sysaudio/ce8ab30dd300b822224d14997c58c06520b642c9.tar.gz",
+            .hash = "12203f0d4afc83bae8571434ff48a459732c15c9542df13e0a97baedc73212d355a1",
+        },
+    },
+
+    .paths = .{
+        "build.zig.zon",
+        "build.zig",
+        "src",
+        "README.md",
+    },
+}
