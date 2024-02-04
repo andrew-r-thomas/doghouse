@@ -26,4 +26,5 @@ std.debug.assert(std.math.approxEqAbs(f32, pitch, 1000, 10));
 
 ## example
 
-A simple example for realtime usage can be found in the examples folder. To run the example, simply run `zig build run`.
+A simple example for realtime usage can be found in the examples folder.
+To run the example, simply run `zig build run`.
