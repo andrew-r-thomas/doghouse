@@ -8,7 +8,7 @@ pub fn Yin(comptime size: usize) type {
     const thresh = 0.1;
 
     return struct {
-        pub fn detect_pitch(signal: [size]f32, sample_rate: usize) usize {
+        pub fn detect_pitch(signal: [size]f32, sample_rate: usize) f32 {
             // // TODO see if we can SIMD
             // // TODO only use one array if possible
             var diffs: [window_size]f32 = undefined;
@@ -37,7 +37,7 @@ pub fn Yin(comptime size: usize) type {
 
             if (sample == undefined) sample = arg_min;
 
-            return sample_rate / sample;
+            return @as(f32, @floatFromInt(sample_rate)) / @as(f32, @floatFromInt(sample));
         }
 
         fn diff_fn(lag: usize, signal: [size]f32) f32 {
@@ -64,12 +64,16 @@ pub fn Yin(comptime size: usize) type {
     };
 }
 
-test "simple A note" {
+test "simple test" {
+    const sec_per_samp: f32 = 1.0 / 44100.0;
     var A: [1024]f32 = undefined;
+
     for (0..1024) |i| {
-        A[i] = @sin(@as(f32, @floatFromInt(i)) * std.math.pi * 2 * 440);
+        const float_idx: f32 = @floatFromInt(i);
+        const val: f32 = @sin(float_idx * sec_per_samp * std.math.pi * 2 * 100);
+        A[i] = val;
     }
     const yin = Yin(1024);
     const pitch = yin.detect_pitch(A, 44100);
-    try std.testing.expect(std.math.approxEqAbs(f32, pitch, 440.0, 1.0));
+    try std.testing.expect(std.math.approxEqAbs(f64, pitch, 100, 10));
 }

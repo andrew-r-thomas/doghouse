@@ -63,9 +63,7 @@ fn readCallback(_: ?*anyopaque, input: []const u8) void {
     std.mem.rotate(f32, &buff, samples);
 
     sysaudio.convertFrom(f32, buff[samples..], recorder.format(), input);
-    const htz = yin.detect_pitch(buff, recorder.sampleRate());
+    const htz: usize = @intFromFloat(yin.detect_pitch(buff, recorder.sampleRate()));
     // TODO put in a separate thread
     std.debug.print("{d} hertz\n", .{htz});
 }
-
-// TODO add some simple tests

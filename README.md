@@ -9,14 +9,17 @@ the name is inspired by [this wonderful article](https://www.objc.io/issues/24-a
 ```zig
 const doghouse = @import("doghouse");
 
-const yin = doghouse.Yin(1024);
+const sec_per_samp: f32 = 1.0 / 44100.0;
 var A: [1024]f32 = undefined;
+
 for (0..1024) |i| {
-    A[i] = @sin(@as(f32, @floatFromInt(i)) * std.math.pi * 2 * 440);
+    const float_idx: f32 = @floatFromInt(i);
+    const val: f32 = @sin(float_idx * sec_per_samp * std.math.pi * 2 * 100);
+    A[i] = val;
 }
 
-const yin = dogohouse.Yin(1024);
+const yin = Yin(1024);
 const pitch = yin.detect_pitch(A, 44100);
 
-std.debug.assert(std.math.approxEqAbs(f32, pitch, 440.0, 1.0));
+std.debug.assert(std.math.approxEqAbs(f32, pitch, 1000, 10));
 ```
