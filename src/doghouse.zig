@@ -66,14 +66,14 @@ pub fn Yin(comptime size: usize) type {
 
 test "simple test" {
     const sec_per_samp: f32 = 1.0 / 44100.0;
-    var A: [1024]f32 = undefined;
+    var note: [1024]f32 = undefined;
 
     for (0..1024) |i| {
         const float_idx: f32 = @floatFromInt(i);
         const val: f32 = @sin(float_idx * sec_per_samp * std.math.pi * 2 * 100);
-        A[i] = val;
+        note[i] = val;
     }
     const yin = Yin(1024);
-    const pitch = yin.detect_pitch(A, 44100);
+    const pitch = yin.detect_pitch(note, 44100);
     try std.testing.expect(std.math.approxEqAbs(f64, pitch, 100, 10));
 }
