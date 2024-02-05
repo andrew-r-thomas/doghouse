@@ -18,7 +18,7 @@ for (0..1024) |i| {
     note[i] = val;
 }
 
-const yin = Yin(1024);
+const yin = Yin(1024, 0.1);
 const pitch = yin.detect_pitch(note, 44100);
 
 std.debug.assert(std.math.approxEqAbs(f32, pitch, 100, 10));

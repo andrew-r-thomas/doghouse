@@ -2,10 +2,8 @@ const std = @import("std");
 
 // TODO think about padding
 // TODO we might need a min
-pub fn Yin(comptime size: usize) type {
+pub fn Yin(comptime size: usize, comptime thresh: f32) type {
     const window_size = size / 2;
-    // TODO make threshold configurable
-    const thresh = 0.1;
 
     return struct {
         pub fn detect_pitch(signal: [size]f32, sample_rate: usize) f32 {
@@ -73,7 +71,7 @@ test "simple test" {
         const val: f32 = @sin(float_idx * sec_per_samp * std.math.pi * 2 * 100);
         note[i] = val;
     }
-    const yin = Yin(1024);
+    const yin = Yin(1024, 0.1);
     const pitch = yin.detect_pitch(note, 44100);
     try std.testing.expect(std.math.approxEqAbs(f64, pitch, 100, 10));
 }

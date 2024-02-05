@@ -55,7 +55,7 @@ pub fn main() !void {
     while (true) {}
 }
 
-const yin = doghouse.Yin(1024);
+const yin = doghouse.Yin(1024, 0.1);
 var buff: [1024]f32 = [_]f32{0.0} ** 1024;
 fn readCallback(_: ?*anyopaque, input: []const u8) void {
     const format_size = recorder.format().size();
