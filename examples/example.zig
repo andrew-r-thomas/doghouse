@@ -60,6 +60,7 @@ var buff: [1024]f32 = [_]f32{0.0} ** 1024;
 fn readCallback(_: ?*anyopaque, input: []const u8) void {
     const format_size = recorder.format().size();
     const samples = input.len / format_size;
+    std.debug.assert(samples <= 1024);
     std.mem.rotate(f32, &buff, samples);
 
     sysaudio.convertFrom(f32, buff[samples..], recorder.format(), input);
